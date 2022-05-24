@@ -2,7 +2,8 @@
 
 package lesson3.task1
 
-import kotlin.math.pow
+import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.sqrt
 
 // Урок 3: циклы
@@ -74,13 +75,14 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun digitNumber(n: Int): Int {
-    var quantity = 1
-    var number = n
-    while (number / 10 != 0) {
-        quantity++
-        number = number / 10
+    if (n == 0) return 1
+    var a = n
+    var answer = 0
+    while (a != 0) {
+        answer += 1
+        a /= 10
     }
-    return quantity
+    return answer
 }
 
 /**
@@ -103,7 +105,12 @@ fun minDivisor(n: Int): Int = TODO()
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = TODO()
+fun maxDivisor(n: Int): Int {
+    for (i in (n / 2) downTo sqrt((n * 1.0)).toInt() - 1) {
+        if ((n % i) == 0) return i
+    }
+    return 1
+}
 
 /**
  * Простая (2 балла)
@@ -143,27 +150,20 @@ fun isCoPrime(m: Int, n: Int): Boolean = TODO()
 /**
  * Средняя (3 балла)
  *
- * Для заданных чисел m и n, m <= n, определить, имеется ли хотя бы один точный квадрат между m и n,
- * то есть, существует ли такое целое k, что m <= k*k <= n.
- * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
- */
-fun squareBetweenExists(m: Int, n: Int): Boolean = TODO()
-
-/**
- * Средняя (3 балла)
- *
  * Поменять порядок цифр заданного числа n на обратный: 13478 -> 87431.
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun revert(n: Int): Int {
-    var reverse = 0
-    var number = n
-    while (number != 0) {
-        reverse = reverse * 10 + (number % 10)
-        number = number / 10
+    var a = 0
+    var n2 = n
+    while ((n2 / 10) >= 1) {
+        a += n2 % 10
+        a *= 10
+        n2 -= n2 % 10
+        n2 = n2 / 10
     }
-    return reverse
+    return a + n2
 }
 
 /**
@@ -175,7 +175,7 @@ fun revert(n: Int): Int {
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean = revert(n) == n
+fun isPalindrome(n: Int): Boolean = TODO()
 
 /**
  * Средняя (3 балла)
@@ -219,16 +219,21 @@ fun cos(x: Double, eps: Double): Double = TODO()
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun squareSequenceDigit(n: Int): Int {
-    var count = 0
-    var number = 1
-    var a = 1
-    if (n == 1) return 1
-    while (count < n) {
-        number = a * a
+    var a = 0
+    var l = 0
+    while (l < n) {
         a += 1
-        count += digitNumber(number)
+        l += digitNumber(a * a)
     }
-    return(number / 10.0.pow(count - n) % 10).toInt()
+    a *= a
+    if (l == n) return a % 10
+    else {
+        for (i in 1..l - n) {
+            a -= a % 10
+            a /= 10
+        }
+        return a % 10
+    }
 }
 
 /**

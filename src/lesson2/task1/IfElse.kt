@@ -4,6 +4,8 @@ package lesson2.task1
 
 import lesson1.task1.discriminant
 import kotlin.math.max
+import kotlin.math.abs
+import kotlin.math.min
 import kotlin.math.sqrt
 
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
@@ -69,12 +71,11 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
 fun ageDescription(age: Int): String = when {
-    (age / 10) % 10 == 1 -> "$age лет"
-    (age % 10 in 2..4) -> "$age года"
-    age % 10 == 1 -> "$age год"
+    ((age % 10 == 1) && (age % 100 !in 10..20)) -> "$age год"
+    ((age % 10 in 2..4) && (age % 100 !in 10..20)) -> "$age года"
     else -> "$age лет"
-}
 
+}
 
 /**
  * Простая (2 балла)
@@ -138,4 +139,7 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    if ((b < c) || (d < a)) return -1
+    return (min(d, b) - max(a, c))
+}

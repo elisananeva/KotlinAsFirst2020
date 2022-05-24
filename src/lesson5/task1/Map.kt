@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import ru.spbstu.wheels.NullableMonad.map
+
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
@@ -132,7 +134,7 @@ fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
  * Простая (2 балла)
  *
  * Для двух списков людей найти людей, встречающихся в обоих списках.
- * В выходном списке не должно быть повторяюихся элементов,
+ * В выходном списке не должно быть повторяющихся элементов,
  * т. е. whoAreInBoth(listOf("Марат", "Семён, "Марат"), listOf("Марат", "Марат")) == listOf("Марат")
  */
 fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
@@ -208,7 +210,12 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
+fun extractRepeats(list: List<String>): Map<String, Int> {
+    val gr = list.groupBy { it }
+    val answer = mutableMapOf<String, Int>()
+    for (x in gr) if (x.value.size > 1) answer.put(x.key, x.value.size)
+    return answer
+}
 
 /**
  * Средняя (3 балла)
@@ -222,20 +229,8 @@ fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
  * Например:
  *   hasAnagrams(listOf("тор", "свет", "рот")) -> true
  */
-fun hasAnagrams(words: List<String>): Boolean {
-    val map = HashMap<Int, MutableSet<String>>()
-    for (word in words) {
-        val stringWord = word.toCharArray().sorted().joinToString("")
-        val wordLength = stringWord.length
-        if (map.containsKey(wordLength)) {
-            if (map.getValue(wordLength).contains(stringWord)) return true
-            else map.getValue(wordLength).add(stringWord)
-        } else {
-            map[wordLength] = mutableSetOf(stringWord)
-        }
-    }
-    return false
-}
+fun hasAnagrams(words: List<String>): Boolean = TODO()
+
 /**
  * Сложная (5 баллов)
  *
@@ -290,23 +285,16 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
 fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
-    val set: MutableSet<Int> = list.toMutableSet()
-
-    if (list.size < 2) return -1 to -1
-    for ((index, i) in list.withIndex()) {
-        val difference: Int = number - i
-        if (set.contains(difference)) {
-            if (2 * difference == number) {
-                val diffIndex = list.indexOfLast { it == difference }
-                if (diffIndex != index) {
-                    return Pair(index, diffIndex)
-                }
-            } else {
-                return Pair(index, list.indexOf(difference))
+    var a = -1
+    var b = -1
+    for (i in 0..list.size - 2)
+        for (j in i + 1..list.size - 1)
+            if (list[i] + list[j] == number) {
+                a = i
+                b = j
+                return Pair(a, b)
             }
-        }
-    }
-    return Pair(-1, -1)
+    return Pair(a, b)
 }
 
 /**

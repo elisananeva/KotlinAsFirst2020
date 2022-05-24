@@ -2,7 +2,6 @@
 
 package lesson4.task1
 
-import kotlin.text.trim
 import lesson1.task1.discriminant
 import kotlin.math.sqrt
 
@@ -99,7 +98,7 @@ fun squares(vararg array: Int) = squares(array.toList()).toTypedArray()
  * "А роза упала на лапу Азора" является палиндромом.
  */
 fun isPalindrome(str: String): Boolean {
-    val lowerCase = str.toLowerCase().filter { it != ' ' }
+    val lowerCase = str.lowercase().filter { it != ' ' }
     for (i in 0..lowerCase.length / 2) {
         if (lowerCase[i] != lowerCase[lowerCase.length - i - 1]) return false
     }
@@ -243,17 +242,15 @@ fun decimalFromString(str: String, base: Int): Int = TODO()
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
 fun roman(n: Int): String {
+    val dec = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
     val rom = listOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
-    val arabic = listOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
-    var answer = StringBuilder()
-    var index = 0
-    var number = n
-    while (number > 0) {
-        while (number >= arabic[index]) {
-            answer.append(rom[index])
-            number -= arabic[index]
+    val answer = StringBuilder()
+    var a = n
+    for (i in dec.indices) {
+        while (a >= dec[i]) {
+            answer.append(rom[i])
+            a -= dec[i]
         }
-        index++
     }
     return answer.toString()
 }
@@ -265,59 +262,92 @@ fun roman(n: Int): String {
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-
 fun russian(n: Int): String {
-    val unitsOne = listOf("", " один", " два", " три", " четыре", " пять", " шесть", " семь", " восемь", " девять")
-    val unitsTwo = listOf("", " одна", " две", " три", " четыре", " пять", " шесть", " семь", " восемь", " девять")
-    val teens = listOf(
-        "", " одиннадцать", " двенадцать", " тринадцать", " четырнадцать", " пятнадцать",
-        " шестнадцать", " семнадцать", " восемнадцать", " девятнадцать"
+    val list = listOf(
+        Pair(900, "девятьсот"),
+        Pair(800, "восемьсот"),
+        Pair(700, "семьсот"),
+        Pair(600, "шестьсот"),
+        Pair(500, "пятьсот"),
+        Pair(400, "четыреста"),
+        Pair(300, "триста"),
+        Pair(200, "двести"),
+        Pair(100, "сто"),
+        Pair(90, "девяносто"),
+        Pair(80, "восемьдесят"),
+        Pair(70, "семьдесят"),
+        Pair(60, "шестьдесят"),
+        Pair(50, "пятьдесят"),
+        Pair(40, "сорок"),
+        Pair(30, "тридцать"),
+        Pair(20, "двадцать"),
+        Pair(19, "девятнадцать"),
+        Pair(18, "восемнадцать"),
+        Pair(17, "семнадцать"),
+        Pair(16, "шестнадцать"),
+        Pair(15, "пятнадцать"),
+        Pair(14, "четырнадцать"),
+        Pair(13, "тринадцать"),
+        Pair(12, "двенадцать"),
+        Pair(11, "одиннадцать"),
+        Pair(10, "десять"),
+        Pair(9, "девять"),
+        Pair(8, "восемь"),
+        Pair(7, "семь"),
+        Pair(6, "шесть"),
+        Pair(5, "пять"),
+        Pair(4, "четыре"),
+        Pair(3, "три"),
+        Pair(2, "два"),
+        Pair(1, "один"),
+        Pair(0, ""),
     )
-    val tens = listOf(
-        "", " десять", " двадцать", " тридцать", " сорок", " пятьдесят", " шестьдесят",
-        " семьдесят", " восемьдесят", " девяносто"
-    )
-    val hundreds = listOf(
-        "", " сто", " двести", " триста", " четыреста", " пятьсот",
-        " шестьсот", " семьсот", " восемьсот", " девятьсот"
-    )
-
+    val rus = list.toMap()
+    var beg = n / 1000
+    var end = n % 1000
     var answer = ""
-    val digits = mutableListOf(0, 0, 0, 0, 0, 0)
-
-    digits[0] = n / 100000
-    answer += hundreds[digits[0]]
-
-    digits[1] = n / 10000 % 10
-    digits[2] = n / 1000 % 10
-    answer += if (digits[1] == 1 && digits[2] != 0) {
-        teens[digits[2]]
-    } else {
-        tens[digits[1]] + unitsTwo[digits[2]]
+    if (end > 0) {
+        if ((end % 100) in 11..19) {
+            answer += rus.get(end % 100)
+            end -= end % 100
+            if (end > 0) answer = rus.get(end) + " " + answer
+            if (answer[answer.lastIndex] == ' ') answer = answer.dropLast(1)
+        } else {
+            answer += rus.get(end % 10)
+            end -= end % 10
+            if (end % 100 > 0) answer = rus.get(end % 100) + " " + answer
+            end -= end % 100
+            if (end > 0) answer = rus.get(end) + " " + answer
+            if (answer[answer.lastIndex] == ' ') answer = answer.dropLast(1)
+        }
     }
+    if (beg > 0) {
 
-    if (n / 1000 != 0) {
-        answer += if (digits[1] == 1) " тысяч"
-        else printThousands(digits[2])
+        if ((beg % 100) in 11..19) {
+            answer = rus.get(beg % 100) + " тысяч $answer"
+            beg -= beg % 100
+            if (beg > 0) answer = rus.get(beg) + " " + answer
+            return answer
+        } else {
+            val a = beg % 10
+            //val b = beg % 100
+            if (beg % 10 > 0) answer = when {
+                ((beg % 10 == 0) && (beg % 100 !in 10..20)) -> " тысяч "
+                ((beg % 10 == 1) && (beg % 100 !in 10..20)) -> "одна тысяча "
+                ((beg % 10 == 2) && (beg % 100 !in 10..20)) -> "две тысячи "
+                ((beg % 10 == 3) && (beg % 100 !in 10..20)) -> "три тысячи "
+                ((beg % 10 == 4) && (beg % 100 !in 10..20)) -> "четыре тысячи "
+                //((beg % 10 in 2..4) && (beg % 100 !in 10..20)) -> rus.get(beg) + " тысячи "
+                else -> rus.get(beg % 10) + " тысяч "
+            } + answer
+            //answer = rus.get(beg % 10) + " " + answer
+            beg -= beg % 10
+            if (a == 0) answer = "тысяч $answer"
+            if (beg % 100 > 0) answer = rus.get(beg % 100) + " " + answer
+            beg -= beg % 100
+            if (beg > 0) answer = rus.get(beg) + " " + answer
+        }
     }
-
-    digits[3] = n / 100 % 10
-    answer += hundreds[digits[3]]
-
-    digits[4] = n / 10 % 10
-    digits[5] = n % 10
-    answer += if (digits[4] == 1 && digits[5] != 0) {
-        teens[digits[5]]
-    } else {
-        tens[digits[4]] + unitsOne[digits[5]]
-    }
-    return (answer.trim())
-
+    if (answer[answer.lastIndex] == ' ') return answer.dropLast(1)
+    return answer
 }
-
-fun printThousands(digit: Int): String =
-    when (digit) {
-        1 -> " тысяча"
-        in 2..4 -> " тысячи"
-        else -> " тысяч"
-    }
